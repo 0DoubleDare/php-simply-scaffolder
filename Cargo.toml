@@ -1,0 +1,24 @@
+[package]
+name = "php-generator"
+version = "0.1.0"
+edition = "2024"
+build = "build.rs"
+
+[dependencies]
+slint = { version = "1.18.1", features = ["live-preview"] }
+tokio = { version = "1.54.0" }
+rfd = { version = "0.17.2", features = ["xdg-portal"] }
+include_dir = "0.7.4"
+
+[build-dependencies]
+slint-build = { version = "1.18.1" }
+
+[profile.release]
+opt-level = "s"
+strip = true
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[target.x86-64-unknown-linux-gnu]
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]

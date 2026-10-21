@@ -1,0 +1,48 @@
+import { Button, LineEdit, VerticalBox, ProgressIndicator, Button } from "std-widgets.slint";
+export component AppWindow inherits Window {
+    width: 500px;
+    height: 400px;
+    title: "PHP Generator";
+
+    in-out property <string> target-install-path: "";
+    in-out property <bool> is-loading: false;
+
+    callback pick-target-folder() -> string;
+    callback start-install-template();
+
+    VerticalBox {
+        alignment: center;
+        cross-axis-alignment: center;
+        spacing: 8px;
+        Button {
+            text: "Выберите папку";
+            width: 300px;
+            height: 40px;
+            primary: true;
+            clicked => {
+                root.target-install-path = root.pick-target-folder()
+            }
+            enabled: !root.is-loading;
+        }
+        LineEdit {
+            placeholder-text: "Путь к папке";
+            text: root.target-install-path;
+            width: 400px;
+            height: 30px;
+            enabled: !root.is-loading;
+            edited(text) => {
+                root.target-install-path = self.text;
+            }
+        }
+        Button {
+            text: "Создать проект";
+            enabled: root.target-install-path == "" ? false : true;
+            clicked => {
+                root.start-install-template();
+            }
+        }
+        ProgressIndicator {
+            indeterminate: true;
+        }
+    }
+}
