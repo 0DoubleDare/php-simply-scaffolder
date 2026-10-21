@@ -1,0 +1,7 @@
+<?php
+$db_host = "localhost";
+$db_name = "my-database";
+$user = "root";
+$password = "";
+
+$charset = "utf8mb4";

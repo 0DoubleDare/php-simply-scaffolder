@@ -7,7 +7,7 @@ export component AppWindow inherits Window {
     in-out property <string> target-install-path: "";
     in-out property <bool> is-loading: false;
 
-    callback pick-target-folder() -> string;
+    callback pick-target-folder();
     callback start-install-template();
 
     VerticalBox {
@@ -19,9 +19,6 @@ export component AppWindow inherits Window {
             width: 300px;
             height: 40px;
             primary: true;
-            clicked => {
-                root.target-install-path = root.pick-target-folder()
-            }
             enabled: !root.is-loading;
         }
         LineEdit {
