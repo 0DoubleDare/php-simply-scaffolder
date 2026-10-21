@@ -9,6 +9,11 @@ slint = { version = "1.18.1", features = ["live-preview"] }
 tokio = { version = "1.54.0" }
 rfd = { version = "0.17.2", features = ["xdg-portal"] }
 include_dir = "0.7.4"
+zip = { version = "9.0.5"}
+reqwest = { version = "0.13.5", features = ["rustls"] }
+
+tracing = { version = "0.1.44"}
+tracing-subscriber = { version = "0.3.23" }
 
 [build-dependencies]
 slint-build = { version = "1.18.1" }

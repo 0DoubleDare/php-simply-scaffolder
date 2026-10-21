@@ -3,6 +3,9 @@ use slint::{SharedString, ToSharedString};
 slint::include_modules!();
 
 fn main() -> Result<(), slint::PlatformError>{
+    tracing_subscriber::fmt()
+        .compact().init();
+
     let app = AppWindow::new()?;
     let php_project_template = include_dir::include_dir!("$CARGO_MANIFEST_DIR/templates/php-project-template");
 
@@ -23,6 +26,15 @@ fn main() -> Result<(), slint::PlatformError>{
         let app_weak = app_weak.clone();
         move || {
 
+        }
+    });
+
+    app.on_toggle_url_line_edit({
+        let app_weak = app_weak.clone();
+        move |is_enabled| {
+            if let Some(ui) = app_weak.upgrade() {
+                ui.set_url_edit_is_enabled(!is_enabled);
+            }
         }
     });
 
