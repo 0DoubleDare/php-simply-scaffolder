@@ -10,7 +10,7 @@ tokio = { version = "1.54.0", features = ["full"] }
 rfd = { version = "0.17.2", features = ["xdg-portal"] }
 zip = { version = "9.0.5"}
 reqwest = { version = "0.13.5", features = ["rustls", "stream"] }
-futures-util = { version = "0.3.34"}
+futures-util = { version = "0.3.34" }
 bytes = "1.12.0"
 
 tracing = { version = "0.1.44"}

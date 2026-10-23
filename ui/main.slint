@@ -41,7 +41,7 @@ export component AppWindow inherits Window {
             placeholder-text: "Директория установки (обязательно)";
             opacity: 0.7;
             text: root.target-install-path;
-            width: 400px;
+            width: 550px;
             height: 30px;
             enabled: download-state == DownloadState.idle;
             edited(text) => {
@@ -51,7 +51,7 @@ export component AppWindow inherits Window {
         HorizontalBox {
             Button {
                 text: "Создать проект";
-                enabled: root.target-install-path != "";
+                enabled: root.target-install-path != "" && root.download-state == DownloadState.idle;
                 clicked => {
                     root.start-install-template();
                     }

@@ -1,6 +1,8 @@
+#![windows_subsystem = "windows"]
+
 use std::{path::PathBuf, str::FromStr};
 
-use php_generator::model::{extract_archive, fetch_archive, structs::StateMessage};
+use php_generator::model::{extract_archive, fetch_archive, open_path_in_editor, structs::StateMessage};
 use reqwest::Url;
 use slint::{SharedString, ToSharedString};
 use tracing::Level;
@@ -22,19 +24,29 @@ async fn main() -> Result<(), slint::PlatformError> {
     app.on_pick_target_folder({
         let weak = app_weak.clone();
         move || {
-            match rfd::FileDialog::new().pick_folder() {
-                Some(current_path) => {
-                    if let Some(ui) = weak.upgrade() {
-                        let path = current_path.to_string_lossy().to_shared_string();
-                        ui.set_target_install_path(path);
-                    }
-                },
-                None => {
-                    if let Some(ui) = weak.upgrade() {
-                        ui.set_state_message(StateMessage::ErrorFailedToPickFolder.to_shared_string());
-                    }
-                },
-            }
+            let async_weak = weak.clone();
+            tokio::spawn(async move {
+                match rfd::FileDialog::new().pick_folder() {
+                    Some(current_path) => {
+                        let _ = slint::invoke_from_event_loop(move || {
+                            if let Some(ui) = async_weak.upgrade() {
+                                let path = current_path.to_string_lossy().to_shared_string();
+                                tracing::info!("{}", path);
+                                ui.set_target_install_path(path);
+                            }
+                        });
+
+                    },
+                    None => {
+                        let _ = slint::invoke_from_event_loop(move || {
+                            if let Some(ui) = async_weak.upgrade() {
+                                ui.set_state_message(StateMessage::ErrorFailedToPickFolder.to_shared_string());
+                            }
+                        });
+                    },
+                }
+            });
+
         }
     });
 
@@ -99,6 +111,7 @@ async fn main() -> Result<(), slint::PlatformError> {
                                             ui.set_state_message(StateMessage::Done.to_shared_string());
                                         }
                                     });
+                                    open_path_in_editor(&target_path);
                                 },
                                 Err(err) => {
                                     tracing::info!("Ошибка загрузки");
