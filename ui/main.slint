@@ -1,12 +1,18 @@
-import { Button, LineEdit, VerticalBox, ProgressIndicator, Button, HorizontalBox } from "std-widgets.slint";
+import { Button, LineEdit, VerticalBox, ProgressIndicator, Button, HorizontalBox, CheckBox } from "std-widgets.slint";
 
+export enum DownloadState {
+    idle,
+    download,
+}
 export component AppWindow inherits Window {
     width: 700px;
     height: 450px;
-    title: "PHP Generator";
+    title: "PHP Scaffolder";
 
     in-out property <bool> is-loading: false;
     in-out property <bool> url-edit-is-enabled: false;
+    in-out property <DownloadState> download-state: DownloadState.idle;
+    in-out property <string> state-message: "Здесь будет отображаться состояние загрузки";
 
     in-out property <string> target-install-path: "";
     in-out property <string> template-archive-url: "https://github.com/0DoubleDare/php-project-template/archive/refs/heads/main.zip";
@@ -15,35 +21,49 @@ export component AppWindow inherits Window {
     callback start-install-template();
     callback toggle-url-line-edit(bool);
 
-    VerticalBox {
-        alignment: center;
+    VerticalLayout {
+        // alignment: stretch;
         cross-axis-alignment: center;
-        spacing: 10px;
+        spacing: 15px;
+        padding-top: 150px;
         Button {
             text: "Выберите папку";
             width: 300px;
             height: 40px;
             primary: true;
-            enabled: !root.is-loading;
+            enabled: download-state == DownloadState.idle;
+            clicked => {
+                root.pick-target-folder()
+            }
         }
 
         LineEdit {
-            placeholder-text: "Директория установки";
+            placeholder-text: "Директория установки (обязательно)";
+            opacity: 0.7;
             text: root.target-install-path;
             width: 400px;
             height: 30px;
-            enabled: !root.is-loading;
+            enabled: download-state == DownloadState.idle;
             edited(text) => {
                 root.target-install-path = self.text;
             }
         }
-        Button {
-            text: "Создать проект";
-            enabled: root.target-install-path == "" ? false : true;
-            clicked => {
-                root.start-install-template();
-            }
+        HorizontalBox {
+            Button {
+                text: "Создать проект";
+                enabled: root.target-install-path != "";
+                clicked => {
+                    root.start-install-template();
+                    }
+                }
+            // CheckBox {
+            //     checked: true;
+            //     Tooltip {
+            //         text: @markdown("Создать папку");
+            //     }
+            // }
         }
+        Rectangle { vertical-stretch: 1.0; }
         HorizontalBox {
             LineEdit {
                 opacity: root.url-edit-is-enabled ? 1.0 : 0.5;
@@ -60,10 +80,21 @@ export component AppWindow inherits Window {
                 clicked => {
                     root.toggle-url-line-edit(root.url-edit-is-enabled)
                 }
+                Tooltip {
+                    text: @markdown("Редактировать удаленный архив");
+                }
             }
         }
+
+        Text {
+            text: root.state-message;
+            opacity: 0.5;
+        }
         ProgressIndicator {
-            indeterminate: true;
+            indeterminate: download-state == DownloadState.download;
+            width: root.width;
+            height: 5px;
+
         }
     }
 }
